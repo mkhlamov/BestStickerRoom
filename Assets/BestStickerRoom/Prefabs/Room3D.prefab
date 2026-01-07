@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 100100010}
   - component: {fileID: 100100011}
   - component: {fileID: 100100012}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_Front
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -158,7 +158,7 @@ GameObject:
   - component: {fileID: 100100018}
   - component: {fileID: 100100019}
   - component: {fileID: 100100020}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall_Left
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -270,7 +270,7 @@ GameObject:
   - component: {fileID: 100100026}
   - component: {fileID: 100100027}
   - component: {fileID: 100100028}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
