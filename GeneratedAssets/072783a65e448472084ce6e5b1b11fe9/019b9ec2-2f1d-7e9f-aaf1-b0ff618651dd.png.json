@@ -1,0 +1,20 @@
+{
+    "asset": "072783a65e448472084ce6e5b1b11fe9",
+    "fileName": "019b9ec2-2f1d-7e9f-aaf1-b0ff618651dd.png",
+    "prompt": "A texture for a sticker prefab in a sticker room game",
+    "negativePrompt": "",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": -1,
+    "w3CTraceId": "4ddf994ba6b7628ab54859c90ac5595a",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}
