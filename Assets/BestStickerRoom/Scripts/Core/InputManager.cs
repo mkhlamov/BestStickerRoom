@@ -14,6 +14,9 @@ namespace BestStickerRoom.Core
         public event Action<Vector2> OnTap;
         public event Action<Vector2> OnClick;
         public event Action<Vector2> OnPoint;
+        public event Action<Vector2> OnDragStart;
+        public event Action<Vector2> OnDragUpdate;
+        public event Action<Vector2> OnDragEnd;
 
         private void Awake()
         {
@@ -87,8 +90,25 @@ namespace BestStickerRoom.Core
         void XRIDefaultInputActions.IXRIUIActions.OnMiddleClick(InputAction.CallbackContext context) { }
         void XRIDefaultInputActions.IXRIUIActions.OnRightClick(InputAction.CallbackContext context) { }
 
-        void XRIDefaultInputActions.ITouchscreenGesturesActions.OnDragStartPosition(InputAction.CallbackContext context) { }
-        void XRIDefaultInputActions.ITouchscreenGesturesActions.OnDragCurrentPosition(InputAction.CallbackContext context) { }
+        void XRIDefaultInputActions.ITouchscreenGesturesActions.OnDragStartPosition(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                var position = context.ReadValue<Vector2>();
+                OnDragStart?.Invoke(position);
+            }
+        }
+
+        void XRIDefaultInputActions.ITouchscreenGesturesActions.OnDragCurrentPosition(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                var position = context.ReadValue<Vector2>();
+                lastPointPosition = position;
+                OnDragUpdate?.Invoke(position);
+            }
+        }
+
         void XRIDefaultInputActions.ITouchscreenGesturesActions.OnDragDelta(InputAction.CallbackContext context) { }
         void XRIDefaultInputActions.ITouchscreenGesturesActions.OnPinchStartPosition(InputAction.CallbackContext context) { }
         void XRIDefaultInputActions.ITouchscreenGesturesActions.OnPinchGap(InputAction.CallbackContext context) { }
@@ -97,6 +117,37 @@ namespace BestStickerRoom.Core
         void XRIDefaultInputActions.ITouchscreenGesturesActions.OnTwistDeltaRotation(InputAction.CallbackContext context) { }
         void XRIDefaultInputActions.ITouchscreenGesturesActions.OnScreenTouchCount(InputAction.CallbackContext context) { }
         void XRIDefaultInputActions.ITouchscreenGesturesActions.OnSpawnObject(InputAction.CallbackContext context) { }
+
+        private bool isMouseDragging;
+        private Vector2 lastMousePosition;
+
+        private void Update()
+        {
+            var mouse = Mouse.current;
+            if (mouse == null) return;
+
+            var currentPosition = mouse.position.ReadValue();
+
+            if (mouse.leftButton.wasPressedThisFrame)
+            {
+                isMouseDragging = true;
+                lastMousePosition = currentPosition;
+                OnDragStart?.Invoke(currentPosition);
+            }
+            else if (mouse.leftButton.isPressed && isMouseDragging)
+            {
+                if (Vector2.Distance(currentPosition, lastMousePosition) > 0.1f)
+                {
+                    lastMousePosition = currentPosition;
+                    OnDragUpdate?.Invoke(currentPosition);
+                }
+            }
+            else if (mouse.leftButton.wasReleasedThisFrame && isMouseDragging)
+            {
+                isMouseDragging = false;
+                OnDragEnd?.Invoke(currentPosition);
+            }
+        }
 
         private Vector2 GetCurrentPointerPosition()
         {

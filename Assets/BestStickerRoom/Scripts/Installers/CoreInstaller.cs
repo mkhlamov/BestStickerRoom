@@ -8,8 +8,12 @@ namespace BestStickerRoom.Installers
     {
         public override void InstallBindings()
         {
-        
             Container.Bind<InputManager>()
+                .FromNewComponentOnNewGameObject()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<DragDropHandler>()
                 .FromNewComponentOnNewGameObject()
                 .AsSingle()
                 .NonLazy();

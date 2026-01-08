@@ -1,5 +1,7 @@
 using UnityEngine;
 using Zenject;
+using BestStickerRoom.Room;
+using BestStickerRoom.Data;
 
 namespace BestStickerRoom.Installers
 {
@@ -19,6 +21,15 @@ namespace BestStickerRoom.Installers
                 .WithId("RaycastCamera")
                 .FromInstance(raycastCamera)
                 .AsSingle();
+
+            Container.BindInterfacesAndSelfTo<WallDetector>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<StickerPlacer>()
+                .FromNewComponentOnNewGameObject()
+                .AsSingle()
+                .NonLazy();
         }
     }
 }

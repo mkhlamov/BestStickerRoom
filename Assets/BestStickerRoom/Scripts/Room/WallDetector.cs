@@ -6,11 +6,11 @@ using Zenject;
 
 namespace BestStickerRoom.Room
 {
-    public class WallDetector : MonoBehaviour
+    public class WallDetector : IWallDetector, IInitializable, IDisposable
     {
-        [SerializeField] private string wallTag = "Wall";
-        [SerializeField] private float maxRaycastDistance = 100f;
-        [SerializeField] private LayerMask wallLayerMask = -1;
+        private const string WALL_TAG = "Wall";
+        private const float MAX_RAYCAST_DISTANCE = 100f;
+        private readonly LayerMask wallLayerMask = -1;
 
         private Camera raycastCamera;
         private InputManager inputManager;
@@ -18,13 +18,13 @@ namespace BestStickerRoom.Room
         public event Action<WallHitResult> OnWallDetected;
 
         [Inject]
-        private void Construct([Inject(Id = "RaycastCamera")] Camera camera, InputManager inputMgr)
+        public void Construct([Inject(Id = "RaycastCamera")] Camera camera, InputManager inputMgr)
         {
             raycastCamera = camera;
             inputManager = inputMgr;
         }
 
-        private void OnEnable()
+        public void Initialize()
         {
             if (inputManager != null)
             {
@@ -33,7 +33,7 @@ namespace BestStickerRoom.Room
             }
         }
 
-        private void OnDisable()
+        public void Dispose()
         {
             if (inputManager != null)
             {
@@ -61,10 +61,10 @@ namespace BestStickerRoom.Room
 
             Ray ray = raycastCamera.ScreenPointToRay(screenPosition);
 
-            if (Physics.Raycast(ray, out RaycastHit hit, maxRaycastDistance, wallLayerMask))
+            if (Physics.Raycast(ray, out RaycastHit hit, MAX_RAYCAST_DISTANCE, wallLayerMask))
             {
                 Debug.Log($"HandleInput hit {hit.collider.gameObject.name}");
-                if (hit.collider.CompareTag(wallTag))
+                if (hit.collider.CompareTag(WALL_TAG))
                 {
                     return WallHitResult.Create(hit);
                 }
@@ -75,9 +75,9 @@ namespace BestStickerRoom.Room
 
         public WallHitResult DetectWallFromWorldRay(Ray worldRay)
         {
-            if (Physics.Raycast(worldRay, out RaycastHit hit, maxRaycastDistance, wallLayerMask))
+            if (Physics.Raycast(worldRay, out RaycastHit hit, MAX_RAYCAST_DISTANCE, wallLayerMask))
             {
-                if (hit.collider.CompareTag(wallTag))
+                if (hit.collider.CompareTag(WALL_TAG))
                 {
                     return WallHitResult.Create(hit);
                 }
