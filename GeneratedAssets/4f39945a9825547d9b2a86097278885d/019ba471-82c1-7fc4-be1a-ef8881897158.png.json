@@ -1,0 +1,20 @@
+{
+    "asset": "4f39945a9825547d9b2a86097278885d",
+    "fileName": "019ba471-82c1-7fc4-be1a-ef8881897158.png",
+    "prompt": "add cute image for a sticker room game. make it some non-rectangular form. make non-sticker pixels transparent",
+    "negativePrompt": "",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": -1,
+    "w3CTraceId": "4ff4c4573702eb09dfbf95b63783975b",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

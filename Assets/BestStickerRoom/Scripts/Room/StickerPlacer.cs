@@ -96,7 +96,7 @@ namespace BestStickerRoom.Room
 
         private void ApplyStickerData(GameObject stickerInstance, DragDropData dragData)
         {
-            if (dragData?.Data is StickerData stickerData)
+            if (dragData?.Data is StickerData stickerData && stickerData.Asset != null)
             {
                 var meshRenderer = stickerInstance.GetComponentInChildren<MeshRenderer>();
                 if (meshRenderer != null)
@@ -104,13 +104,19 @@ namespace BestStickerRoom.Room
                     var material = meshRenderer.material;
                     if (material != null)
                     {
-                        if (stickerData.Texture != null)
+                        var atlasTexture = stickerData.AtlasTexture;
+                        if (atlasTexture != null)
                         {
-                            material.mainTexture = stickerData.Texture;
-                        }
-                        else if (stickerData.Sprite != null)
-                        {
-                            material.mainTexture = stickerData.Sprite.texture;
+                            material.mainTexture = atlasTexture;
+
+                            var offset = stickerData.UVOffset;
+                            var scale = stickerData.UVScale;
+
+                            material.SetTextureOffset("_BaseMap", offset);
+                            material.SetTextureScale("_BaseMap", scale);
+
+                            material.SetTextureOffset("_MainTex", offset);
+                            material.SetTextureScale("_MainTex", scale);
                         }
                     }
                 }
