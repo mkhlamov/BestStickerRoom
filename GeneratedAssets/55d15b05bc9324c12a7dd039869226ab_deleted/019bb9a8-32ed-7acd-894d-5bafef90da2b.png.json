@@ -1,0 +1,26 @@
+{
+    "asset": "55d15b05bc9324c12a7dd039869226ab",
+    "fileName": "019bb9a8-32ed-7acd-894d-5bafef90da2b.png",
+    "prompt": "Generate empty isometric corner of a room will walls and floor with different calm cute colors",
+    "negativePrompt": "",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": -1,
+    "w3CTraceId": "05a040427605bd5913d7c9a03bdb4d17",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0
+}
