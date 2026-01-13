@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f3d853d08fda44b7bbc985c07f205f3, type: 3}
   m_Name: test1
   m_EditorClassIdentifier: Assembly-CSharp::BestStickerRoom.Data.StickerAsset
-  sprite: {fileID: 21300000, guid: 072783a65e448472084ce6e5b1b11fe9, type: 3}
-  stickerName: test0
+  sprite: {fileID: 21300000, guid: 4f39945a9825547d9b2a86097278885d, type: 3}
+  stickerName: test1
   allowedPosition: 0
   pack: {fileID: 0}

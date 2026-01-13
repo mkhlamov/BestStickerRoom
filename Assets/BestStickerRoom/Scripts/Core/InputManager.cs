@@ -92,6 +92,7 @@ namespace BestStickerRoom.Core
 
         void XRIDefaultInputActions.ITouchscreenGesturesActions.OnDragStartPosition(InputAction.CallbackContext context)
         {
+            Debug.Log($"OnDragStartPosition {context.ReadValue<Vector2>()}");
             if (context.performed)
             {
                 var position = context.ReadValue<Vector2>();
@@ -127,7 +128,7 @@ namespace BestStickerRoom.Core
             if (mouse == null) return;
 
             var currentPosition = mouse.position.ReadValue();
-
+            
             if (mouse.leftButton.wasPressedThisFrame)
             {
                 isMouseDragging = true;

@@ -9,7 +9,7 @@ namespace BestStickerRoom.UI
     {
         [SerializeField] private ScrollRect scrollRect;
         [SerializeField] private RectTransform contentContainer;
-        [SerializeField] private GameObject stickerItemPrefab;
+        [SerializeField] private StickerItemUI stickerItemPrefab;
         [SerializeField] private float itemSpacing = 10f;
         [SerializeField] private Vector2 itemSize = new Vector2(100f, 100f);
 
@@ -39,7 +39,7 @@ namespace BestStickerRoom.UI
             }
         }
 
-        public void SetStickers(StickerAsset[] assets)
+        private void SetStickers(StickerAsset[] assets)
         {
             ClearItems();
 
@@ -47,37 +47,12 @@ namespace BestStickerRoom.UI
             {
                 return;
             }
-
-            var validCount = 0;
-            for (var i = 0; i < assets.Length; i++)
+            
+            foreach (var asset in assets)
             {
-                if (assets[i] != null && assets[i].Sprite != null) validCount++;
-            }
+                if (!asset || !asset.Sprite) continue;
 
-            var contentWidth = validCount * (itemSize.x + itemSpacing) - itemSpacing;
-            contentContainer.sizeDelta = new Vector2(contentWidth, contentContainer.sizeDelta.y);
-
-            var itemIndex = 0;
-            for (var i = 0; i < assets.Length; i++)
-            {
-                if (assets[i] == null || assets[i].Sprite == null) continue;
-
-                var item = CreateStickerItem(assets[i]);
-                if (item != null)
-                {
-                    var rectTransform = item.GetComponent<RectTransform>();
-                    if (rectTransform != null)
-                    {
-                        rectTransform.anchoredPosition = new Vector2(
-                            itemIndex * (itemSize.x + itemSpacing) + itemSize.x * 0.5f,
-                            0f
-                        );
-                        rectTransform.sizeDelta = itemSize;
-                    }
-
-                    stickerItems.Add(item);
-                    itemIndex++;
-                }
+                CreateStickerItem(asset);
             }
         }
 
@@ -106,14 +81,9 @@ namespace BestStickerRoom.UI
                 return null;
             }
 
-            var itemObject = Instantiate(stickerItemPrefab, contentContainer);
-            var stickerItem = itemObject.GetComponent<StickerItemUI>();
-            if (stickerItem == null)
-            {
-                stickerItem = itemObject.AddComponent<StickerItemUI>();
-            }
-
+            var stickerItem = Instantiate(stickerItemPrefab, contentContainer);
             stickerItem.Initialize(asset);
+            stickerItem.gameObject.SetActive(true);
             return stickerItem;
         }
 

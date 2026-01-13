@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4003809d72774a09bd257b5264c9ccf, type: 3}
   m_Name: TestLevelSettings
   m_EditorClassIdentifier: Assembly-CSharp::BestStickerRoom.Data.LevelSettings
-  roomPrefab: {fileID: 100100001, guid: 9cea0103b80e430ca80aab61b2d47519, type: 3}
+  roomPrefab: {fileID: 5269466164689838121, guid: 8abd9274dd5f54a4b95f62ab5ec08dbd, type: 3}
   stickerPrefab: {fileID: 5390863076657921951, guid: f9cc9d950089c46ca812427e2dcda797, type: 3}
   stickerOffsetFromSurface: 0.01
   stickerSize: {x: 1, y: 1}
+  stickerPack: {fileID: 11400000, guid: 46868d92127a346edbf56a2c5e743462, type: 2}

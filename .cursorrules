@@ -3,3 +3,7 @@
 ## Unity Development
 - Don't make .meta files. Let Unity generate them.
 
+## Code Organization
+- Place Unity methods (Awake, Start, Update, etc.) before other methods.
+- Field order: [SerializeField] fields, then public fields, then dependencies (injected fields), then private fields.
+

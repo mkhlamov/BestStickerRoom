@@ -23,10 +23,7 @@ namespace BestStickerRoom.UI
     public class StickerData
     {
         public StickerAsset Asset { get; }
-        public Texture2D AtlasTexture => Asset?.AtlasTexture;
         public Sprite Sprite => Asset?.Sprite;
-        public Vector2 UVOffset => Asset?.UVOffset ?? Vector2.zero;
-        public Vector2 UVScale => Asset?.UVScale ?? Vector2.one;
 
         public StickerData(StickerAsset asset)
         {

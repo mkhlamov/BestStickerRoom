@@ -7,16 +7,16 @@ namespace BestStickerRoom.Animation
 {
     public class AnimatedSticker : MonoBehaviour
     {
-        public Sprite[] animationFrames; // Array of sprites for animation
-        public float frameRate = 0.1f; // Time between frames
+        public Sprite[] animationFrames;
+        public float frameRate = 0.1f;
 
-        private MeshRenderer meshRenderer;
+        private SpriteRenderer spriteRenderer;
         private int currentFrame;
         private float timer;
 
         void Start()
         {
-            meshRenderer = GetComponent<MeshRenderer>();
+            spriteRenderer = GetComponent<SpriteRenderer>();
             if (animationFrames.Length > 0)
             {
                 UpdateFrame();
@@ -39,9 +39,9 @@ namespace BestStickerRoom.Animation
 
         void UpdateFrame()
         {
-            if (meshRenderer != null && animationFrames[currentFrame] != null)
+            if (spriteRenderer != null && animationFrames[currentFrame] != null)
             {
-                meshRenderer.material.mainTexture = animationFrames[currentFrame].texture;
+                spriteRenderer.sprite = animationFrames[currentFrame];
             }
         }
     }

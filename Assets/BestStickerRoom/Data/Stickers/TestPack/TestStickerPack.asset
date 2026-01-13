@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2402c17d12f434e50a2bfaa2d268a451, type: 3}
   m_Name: TestStickerPack
   m_EditorClassIdentifier: Assembly-CSharp::BestStickerRoom.Data.StickerPack
-  packName: 
-  description: 
+  packName: Test pack
+  description: obv
   previewImage: {fileID: 0}
   price: 0
-  stickers: []
+  stickers:
+  - {fileID: 11400000, guid: 7de83f3f947c94394acd9b6e5e579cb7, type: 2}
+  - {fileID: 11400000, guid: c9c696ec407af48d4a263e0ab6643168, type: 2}
