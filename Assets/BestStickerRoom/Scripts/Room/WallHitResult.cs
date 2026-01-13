@@ -15,14 +15,9 @@ namespace BestStickerRoom.Room
             IsValid = false
         };
 
-        public static WallHitResult Create(RaycastHit2D hit, RoomHitValidator validator)
+        public static WallHitResult Create(RaycastHit2D hit)
         {
             if (hit.collider == null)
-            {
-                return Invalid;
-            }
-
-            if (validator != null && !validator.IsValidHitPoint(hit.point))
             {
                 return Invalid;
             }
@@ -37,14 +32,9 @@ namespace BestStickerRoom.Room
             };
         }
 
-        public static WallHitResult Create(Vector3 hitPoint, GameObject wallObject, RoomHitValidator validator)
+        public static WallHitResult Create(Vector3 hitPoint, GameObject wallObject)
         {
             if (wallObject == null)
-            {
-                return Invalid;
-            }
-
-            if (validator != null && !validator.IsValidHitPoint(hitPoint))
             {
                 return Invalid;
             }

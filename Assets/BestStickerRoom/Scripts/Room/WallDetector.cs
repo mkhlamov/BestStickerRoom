@@ -8,22 +8,20 @@ namespace BestStickerRoom.Room
 {
     public class WallDetector : IWallDetector, IInitializable, IDisposable
     {
-        private const string WALL_TAG = "Wall";
+        private const string WALL_TAG = "Room";
         private const float MAX_RAYCAST_DISTANCE = 100f;
         private readonly LayerMask wallLayerMask = -1;
 
         private Camera raycastCamera;
         private InputManager inputManager;
-        private RoomHitValidator roomHitValidator;
 
         public event Action<WallHitResult> OnWallDetected;
 
         [Inject]
-        public void Construct([Inject(Id = "RaycastCamera")] Camera camera, InputManager inputMgr, RoomHitValidator validator)
+        public void Construct([Inject(Id = "RaycastCamera")] Camera camera, InputManager inputMgr)
         {
             raycastCamera = camera;
             inputManager = inputMgr;
-            roomHitValidator = validator;
         }
 
         public void Initialize()
@@ -65,7 +63,7 @@ namespace BestStickerRoom.Room
 
             if (hit.collider != null && hit.collider.CompareTag(WALL_TAG))
             {
-                return WallHitResult.Create(hit, roomHitValidator);
+                return WallHitResult.Create(hit);
             }
 
             return WallHitResult.Invalid;
@@ -80,7 +78,7 @@ namespace BestStickerRoom.Room
 
             if (hit.collider != null && hit.collider.CompareTag(WALL_TAG))
             {
-                return WallHitResult.Create(hit, roomHitValidator);
+                return WallHitResult.Create(hit);
             }
 
             return WallHitResult.Invalid;
