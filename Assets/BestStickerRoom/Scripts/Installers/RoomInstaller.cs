@@ -8,6 +8,7 @@ namespace BestStickerRoom.Installers
     public class RoomInstaller : MonoInstaller
     {
         [SerializeField] private Camera raycastCamera;
+        [SerializeField] private RoomHitValidator roomHitValidator;
 
         public override void InstallBindings()
         {
@@ -17,9 +18,19 @@ namespace BestStickerRoom.Installers
                 return;
             }
 
+            if (roomHitValidator == null)
+            {
+                Debug.LogError("RoomInstaller: RoomHitValidator is not assigned. Please assign it in the inspector.");
+                return;
+            }
+
             Container.Bind<Camera>()
                 .WithId("RaycastCamera")
                 .FromInstance(raycastCamera)
+                .AsSingle();
+
+            Container.Bind<RoomHitValidator>()
+                .FromInstance(roomHitValidator)
                 .AsSingle();
 
             Container.BindInterfacesAndSelfTo<WallDetector>()

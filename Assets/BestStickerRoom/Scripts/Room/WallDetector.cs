@@ -14,14 +14,16 @@ namespace BestStickerRoom.Room
 
         private Camera raycastCamera;
         private InputManager inputManager;
+        private RoomHitValidator roomHitValidator;
 
         public event Action<WallHitResult> OnWallDetected;
 
         [Inject]
-        public void Construct([Inject(Id = "RaycastCamera")] Camera camera, InputManager inputMgr)
+        public void Construct([Inject(Id = "RaycastCamera")] Camera camera, InputManager inputMgr, RoomHitValidator validator)
         {
             raycastCamera = camera;
             inputManager = inputMgr;
+            roomHitValidator = validator;
         }
 
         public void Initialize()
@@ -44,7 +46,6 @@ namespace BestStickerRoom.Room
 
         private void HandleInput(Vector2 screenPosition)
         {
-            Debug.Log($"HandleInput screenPosition {screenPosition:F2}");
             var hitResult = DetectWallFromScreenPosition(screenPosition);
             if (IsValidWallHit(hitResult))
             {
@@ -59,15 +60,12 @@ namespace BestStickerRoom.Room
                 return WallHitResult.Invalid;
             }
 
-            Ray ray = raycastCamera.ScreenPointToRay(screenPosition);
+            var worldPoint = raycastCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, 0f));
+            var hit = Physics2D.Raycast(worldPoint, Vector2.zero, 0f, wallLayerMask);
 
-            if (Physics.Raycast(ray, out RaycastHit hit, MAX_RAYCAST_DISTANCE, wallLayerMask))
+            if (hit.collider != null && hit.collider.CompareTag(WALL_TAG))
             {
-                Debug.Log($"HandleInput hit {hit.collider.gameObject.name}");
-                if (hit.collider.CompareTag(WALL_TAG))
-                {
-                    return WallHitResult.Create(hit);
-                }
+                return WallHitResult.Create(hit, roomHitValidator);
             }
 
             return WallHitResult.Invalid;
@@ -75,12 +73,14 @@ namespace BestStickerRoom.Room
 
         public WallHitResult DetectWallFromWorldRay(Ray worldRay)
         {
-            if (Physics.Raycast(worldRay, out RaycastHit hit, MAX_RAYCAST_DISTANCE, wallLayerMask))
+            var origin = new Vector2(worldRay.origin.x, worldRay.origin.y);
+            var direction = new Vector2(worldRay.direction.x, worldRay.direction.y).normalized;
+            
+            var hit = Physics2D.Raycast(origin, direction, MAX_RAYCAST_DISTANCE, wallLayerMask);
+
+            if (hit.collider != null && hit.collider.CompareTag(WALL_TAG))
             {
-                if (hit.collider.CompareTag(WALL_TAG))
-                {
-                    return WallHitResult.Create(hit);
-                }
+                return WallHitResult.Create(hit, roomHitValidator);
             }
 
             return WallHitResult.Invalid;
