@@ -9,7 +9,9 @@ namespace BestStickerRoom.Room
 {
     public class StickerPlacer : MonoBehaviour
     {
-        [SerializeField] private float followDistance = 2f;
+        [SerializeField] private float sortingMultiplier = 100f;
+        [SerializeField] private int baseSortingOrder = 0;
+        [SerializeField] private string sortingLayerName = "Stickers";
 
         private LevelSettings levelSettings;
         private DragDropHandler dragDropHandler;
@@ -138,6 +140,7 @@ namespace BestStickerRoom.Room
 
             var position = GetStickerPosition(screenPosition);
             currentStickerInstance.transform.position = position;
+            UpdateStickerSorting(currentStickerInstance, position);
         }
 
         private Vector3 GetStickerPosition(Vector2 screenPosition)
@@ -147,15 +150,19 @@ namespace BestStickerRoom.Room
                 return Vector3.zero;
             }
 
-            if (!raycastCamera.orthographic)
-            {
-                Debug.LogError("StickerPlacer: Orthographic camera is required for 2D room!");
-                return Vector3.zero;
-            }
-
-            var zDepth = raycastCamera.transform.position.z + levelSettings.StickerOffsetFromSurface;
-            var worldPos = raycastCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, zDepth));
+            var worldPos = IsometricUtils.ScreenToIsometricWorld(screenPosition, raycastCamera, levelSettings.StickerOffsetFromSurface);
             return worldPos;
+        }
+
+        private void UpdateStickerSorting(GameObject stickerInstance, Vector3 worldPosition)
+        {
+            if (stickerInstance == null) return;
+
+            var spriteRenderer = stickerInstance.GetComponentInChildren<SpriteRenderer>();
+            if (spriteRenderer == null) return;
+
+            spriteRenderer.sortingLayerName = sortingLayerName;
+            IsometricUtils.UpdateSortingOrder(spriteRenderer, worldPosition, baseSortingOrder, sortingMultiplier);
         }
 
         private void DestroyStickerInstance()
@@ -175,6 +182,7 @@ namespace BestStickerRoom.Room
                 if (spriteRenderer != null && stickerData.Sprite != null)
                 {
                     spriteRenderer.sprite = stickerData.Sprite;
+                    spriteRenderer.sortingLayerName = sortingLayerName;
                 }
             }
         }
