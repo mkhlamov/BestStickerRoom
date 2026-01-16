@@ -54,7 +54,6 @@ namespace BestStickerRoom.Core
 
         private void HandleDragStart(Vector2 screenPosition)
         {
-            Debug.Log($"HandleDragStart screenPosition {screenPosition}");
             if (isDragging) return;
 
             dragStartPosition = screenPosition;

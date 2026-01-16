@@ -3,6 +3,7 @@ using UnityEngine;
 using BestStickerRoom.Core;
 using BestStickerRoom.Data;
 using BestStickerRoom.UI;
+using UniRx;
 using Zenject;
 
 namespace BestStickerRoom.Room
@@ -15,6 +16,7 @@ namespace BestStickerRoom.Room
 
         private LevelSettings levelSettings;
         private DragDropHandler dragDropHandler;
+        private IDragDropGate dragDropGate;
         private Camera raycastCamera;
         private Transform stickerParent;
 
@@ -24,10 +26,15 @@ namespace BestStickerRoom.Room
         public event Action<GameObject> OnStickerPlaced;
 
         [Inject]
-        private void Construct(DragDropHandler dragDrop, LevelSettings settings, [Inject(Id = "RaycastCamera")] Camera camera)
+        private void Construct(
+            DragDropHandler dragDrop,
+            LevelSettings settings,
+            [InjectOptional] IDragDropGate dragGate,
+            [Inject(Id = "RaycastCamera")] Camera camera)
         {
             dragDropHandler = dragDrop;
             levelSettings = settings;
+            dragDropGate = dragGate;
             raycastCamera = camera;
         }
 
@@ -48,6 +55,16 @@ namespace BestStickerRoom.Room
                 dragDropHandler.OnDragDropped += HandleDragDropped;
                 dragDropHandler.OnDragCancelled += HandleDragCancelled;
             }
+            
+            dragDropGate.DragAllowed
+                .Subscribe(allowed =>
+                {
+                    if (!allowed) return;
+                    if (currentDragData == null) return;
+                    CreateStickerInstance();
+                    ApplyStickerData(currentStickerInstance, currentDragData);
+                })
+                .AddTo(this);
         }
 
         private void OnDisable()
@@ -70,13 +87,18 @@ namespace BestStickerRoom.Room
             }
 
             currentDragData = dragData;
-            CreateStickerInstance();
-            ApplyStickerData(currentStickerInstance, dragData);
         }
 
         private void HandleDragUpdated(DragDropData dragData)
         {
-            if (currentStickerInstance == null) return;
+            if (dragDropGate != null && !dragDropGate.DragAllowed.Value)
+            {
+                return;
+            }
+            if (!currentStickerInstance)
+            {
+                return;
+            }
             UpdateStickerPosition(dragData.CurrentScreenPosition);
         }
 
@@ -93,7 +115,6 @@ namespace BestStickerRoom.Room
 
         private void HandleDragCancelled(DragDropData dragData)
         {
-            Debug.Log("HandleDragCancelled");
             if (currentStickerInstance != null)
             {
                 DestroyStickerInstance();

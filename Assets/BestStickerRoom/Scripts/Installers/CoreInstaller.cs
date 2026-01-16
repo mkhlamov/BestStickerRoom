@@ -1,4 +1,5 @@
 using BestStickerRoom.Core;
+using BestStickerRoom.UI;
 using UnityEngine;
 using Zenject;
 
@@ -15,6 +16,10 @@ namespace BestStickerRoom.Installers
 
             Container.Bind<DragDropHandler>()
                 .FromNewComponentOnNewGameObject()
+                .AsSingle()
+                .NonLazy();
+
+            Container.BindInterfacesAndSelfTo<DragDropScrollRectGate>()
                 .AsSingle()
                 .NonLazy();
         }
