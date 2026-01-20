@@ -67,13 +67,17 @@ namespace BestStickerRoom.Tests.PlayMode
             var prefab = CreateStickerPrefab(sprite);
 
             SetPrivateField(levelSettings, "stickerPrefab", prefab);
-            SetPrivateField(levelSettings, "stickerOffsetFromSurface", 0.01f);
             SetPrivateField(levelSettings, "stickerSize", new Vector2(1f, 1f));
 
             Container.BindInstance(levelSettings);
             Container.BindInstance(dragDropHandler);
             Container.Bind<IDragDropGate>().FromInstance(gate);
             Container.Bind<Camera>().WithId("RaycastCamera").FromInstance(camera);
+            var roomObject = new GameObject("Room");
+            roomObject.tag = "Room";
+            roomObject.AddComponent<BoxCollider2D>();
+            var room = roomObject.AddComponent<Room.Room>();
+            Container.Bind<Room.Room>().FromInstance(room);
             Container.Bind<StickerPlacer>().FromNewComponentOnNewGameObject().AsSingle().NonLazy();
 
             PostInstall();
@@ -90,21 +94,19 @@ namespace BestStickerRoom.Tests.PlayMode
                 CurrentScreenPosition = new Vector2(100f, 100f)
             };
 
-            GameObject placedSticker = null;
+            Sticker placedSticker = null;
             placer.OnStickerPlaced += sticker => placedSticker = sticker;
 
             InvokePrivate(placer, "HandleDragStarted", dragData);
             gate.DragAllowed.Value = true;
             InvokePrivate(placer, "HandleDragUpdated", dragData);
 
-            var wall = new GameObject("Wall");
-            wall.tag = "Room";
-            var wallHit = WallHitResult.Create(Vector3.zero, wall);
+            var wallHit = WallHitResult.Create(Vector3.zero, roomObject);
 
             InvokePrivate(placer, "HandleDragDropped", dragData, wallHit);
 
             Assert.IsNotNull(placedSticker);
-            var renderer = placedSticker.GetComponentInChildren<SpriteRenderer>();
+            var renderer = placedSticker.SpriteRenderer;
             Assert.IsNotNull(renderer);
             Assert.AreEqual(sprite, renderer.sprite);
 

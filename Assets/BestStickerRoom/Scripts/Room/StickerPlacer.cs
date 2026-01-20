@@ -13,29 +13,32 @@ namespace BestStickerRoom.Room
         [SerializeField] private float sortingMultiplier = 100f;
         [SerializeField] private int baseSortingOrder = 0;
         [SerializeField] private string sortingLayerName = "Stickers";
+        [SerializeField] private Sticker currentSticker;
 
         private LevelSettings levelSettings;
         private DragDropHandler dragDropHandler;
         private IDragDropGate dragDropGate;
         private Camera raycastCamera;
+        private Room room;
+        
         private Transform stickerParent;
-
-        [SerializeField] private GameObject currentStickerInstance;
         private DragDropData currentDragData;
 
-        public event Action<GameObject> OnStickerPlaced;
+        public event Action<Sticker> OnStickerPlaced;
 
         [Inject]
         private void Construct(
             DragDropHandler dragDrop,
             LevelSettings settings,
             IDragDropGate dragGate,
-            [Inject(Id = "RaycastCamera")] Camera camera)
+            [Inject(Id = "RaycastCamera")] Camera camera,
+            Room roomInstance)
         {
             dragDropHandler = dragDrop;
             levelSettings = settings;
             dragDropGate = dragGate;
             raycastCamera = camera;
+            room = roomInstance;
         }
 
         private void Awake()
@@ -51,7 +54,7 @@ namespace BestStickerRoom.Room
                     if (!allowed) return;
                     if (currentDragData == null) return;
                     CreateStickerInstance();
-                    ApplyStickerData(currentStickerInstance, currentDragData);
+                    ApplyStickerData(currentSticker, currentDragData);
                 })
                 .AddTo(this);
         }
@@ -95,7 +98,7 @@ namespace BestStickerRoom.Room
             {
                 return;
             }
-            if (!currentStickerInstance)
+            if (currentSticker == null)
             {
                 return;
             }
@@ -104,21 +107,27 @@ namespace BestStickerRoom.Room
 
         private void HandleDragDropped(DragDropData dragData, WallHitResult wallHit)
         {
-            if (currentStickerInstance == null) return;
+            if (currentSticker == null) return;
             
             UpdateStickerPosition(dragData.CurrentScreenPosition);
-            OnStickerPlaced?.Invoke(currentStickerInstance);
+            if (!FitsInRoomCollider(currentSticker, wallHit))
+            {
+                DestroyStickerInstance();
+                currentDragData = null;
+                return;
+            }
+            OnStickerPlaced?.Invoke(currentSticker);
 
-            currentStickerInstance = null;
+            currentSticker = null;
             currentDragData = null;
         }
 
         private void HandleDragCancelled(DragDropData dragData)
         {
-            if (currentStickerInstance != null)
+            if (currentSticker != null)
             {
                 DestroyStickerInstance();
-                currentStickerInstance = null;
+                currentSticker = null;
             }
 
             currentDragData = null;
@@ -138,16 +147,23 @@ namespace BestStickerRoom.Room
             var position = GetStickerPosition(screenPosition);
             var rotation = Quaternion.identity;
 
-            currentStickerInstance = Instantiate(stickerPrefab, position, rotation);
+            var instance = Instantiate(stickerPrefab, position, rotation);
+            var stickerInstance = instance.GetComponent<Sticker>();
+            if(stickerInstance == null)
+            {
+                Debug.LogError("StickerPlacer: Sticker component is not assigned!");
+                return;
+            }
+            currentSticker = stickerInstance;
 
             if (stickerParent == null)
             {
                 stickerParent = new GameObject("Stickers").transform;
             }
 
-            currentStickerInstance.transform.SetParent(stickerParent);
+            currentSticker.transform.SetParent(stickerParent);
 
-            var stickerTransform = currentStickerInstance.transform;
+            var stickerTransform = currentSticker.transform;
             stickerTransform.localScale = new Vector3(
                 levelSettings.StickerSize.x,
                 levelSettings.StickerSize.y,
@@ -157,11 +173,11 @@ namespace BestStickerRoom.Room
 
         private void UpdateStickerPosition(Vector2 screenPosition)
         {
-            if (currentStickerInstance == null || raycastCamera == null) return;
+            if (currentSticker == null || raycastCamera == null) return;
 
             var position = GetStickerPosition(screenPosition);
-            currentStickerInstance.transform.position = position;
-            UpdateStickerSorting(currentStickerInstance, position);
+            currentSticker.transform.position = position;
+            UpdateStickerSorting(currentSticker, position);
         }
 
         private Vector3 GetStickerPosition(Vector2 screenPosition)
@@ -175,31 +191,58 @@ namespace BestStickerRoom.Room
             return worldPos;
         }
 
-        private void UpdateStickerSorting(GameObject stickerInstance, Vector3 worldPosition)
+        private void UpdateStickerSorting(Sticker sticker, Vector3 worldPosition)
         {
-            if (stickerInstance == null) return;
+            if (sticker == null) return;
 
-            var spriteRenderer = stickerInstance.GetComponentInChildren<SpriteRenderer>();
+            var spriteRenderer = sticker.SpriteRenderer;
             if (spriteRenderer == null) return;
 
             spriteRenderer.sortingLayerName = sortingLayerName;
             IsometricUtils.UpdateSortingOrder(spriteRenderer, worldPosition, baseSortingOrder, sortingMultiplier);
         }
 
+        private bool FitsInRoomCollider(Sticker sticker, WallHitResult wallHit)
+        {
+            if (sticker == null) return false;
+            if (!wallHit.IsValid || wallHit.WallObject == null) return false;
+            if (room == null || room.Collider == null) return false;
+
+            var spriteRenderer = sticker.SpriteRenderer;
+            if (spriteRenderer == null) return false;
+
+            var bounds = spriteRenderer.bounds;
+            var min = bounds.min;
+            var max = bounds.max;
+
+            var bottomLeft = new Vector2(min.x, min.y);
+            var bottomRight = new Vector2(max.x, min.y);
+            var topLeft = new Vector2(min.x, max.y);
+            var topRight = new Vector2(max.x, max.y);
+
+            var roomCollider = room.Collider;
+            if (!roomCollider.OverlapPoint(bottomLeft)) return false;
+            if (!roomCollider.OverlapPoint(bottomRight)) return false;
+            if (!roomCollider.OverlapPoint(topLeft)) return false;
+            if (!roomCollider.OverlapPoint(topRight)) return false;
+
+            return true;
+        }
+
         private void DestroyStickerInstance()
         {
-            if (currentStickerInstance != null)
+            if (currentSticker != null)
             {
-                Destroy(currentStickerInstance);
-                currentStickerInstance = null;
+                Destroy(currentSticker.gameObject);
+                currentSticker = null;
             }
         }
 
-        private void ApplyStickerData(GameObject stickerInstance, DragDropData dragData)
+        private void ApplyStickerData(Sticker sticker, DragDropData dragData)
         {
             if (dragData?.Data is StickerData stickerData && stickerData.Asset != null)
             {
-                var spriteRenderer = stickerInstance.GetComponentInChildren<SpriteRenderer>();
+                var spriteRenderer = sticker.SpriteRenderer;
                 if (spriteRenderer != null && stickerData.Sprite != null)
                 {
                     spriteRenderer.sprite = stickerData.Sprite;

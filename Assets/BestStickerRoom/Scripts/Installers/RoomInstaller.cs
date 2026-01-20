@@ -26,6 +26,10 @@ namespace BestStickerRoom.Installers
                 .AsSingle()
                 .NonLazy();
 
+            Container.Bind<Room.Room>()
+                .FromComponentInHierarchy()
+                .AsSingle();
+
             Container.Bind<StickerPlacer>()
                 .FromNewComponentOnNewGameObject()
                 .AsSingle()
