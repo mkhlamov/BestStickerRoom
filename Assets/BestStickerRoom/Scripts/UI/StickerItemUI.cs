@@ -22,6 +22,7 @@ namespace BestStickerRoom.UI
         public void Initialize(StickerAsset asset)
         {
             stickerAsset = asset;
+            stickerImage.preserveAspect = true;
             UpdateImage();
         }
 
