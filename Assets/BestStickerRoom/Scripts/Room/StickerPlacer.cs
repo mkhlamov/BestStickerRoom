@@ -171,7 +171,7 @@ namespace BestStickerRoom.Room
                 return Vector3.zero;
             }
 
-            var worldPos = IsometricUtils.ScreenToIsometricWorld(screenPosition, raycastCamera, levelSettings.StickerOffsetFromSurface);
+            var worldPos = IsometricUtils.ScreenToIsometricWorld(screenPosition, raycastCamera);
             return worldPos;
         }
 
