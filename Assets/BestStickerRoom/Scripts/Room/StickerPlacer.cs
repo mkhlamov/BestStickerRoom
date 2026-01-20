@@ -29,7 +29,7 @@ namespace BestStickerRoom.Room
         private void Construct(
             DragDropHandler dragDrop,
             LevelSettings settings,
-            [InjectOptional] IDragDropGate dragGate,
+            IDragDropGate dragGate,
             [Inject(Id = "RaycastCamera")] Camera camera)
         {
             dragDropHandler = dragDrop;
@@ -44,6 +44,16 @@ namespace BestStickerRoom.Room
             {
                 Debug.LogError("StickerPlacer: LevelSettings is not assigned!");
             }
+
+            dragDropGate.DragAllowed
+                .Subscribe(allowed =>
+                {
+                    if (!allowed) return;
+                    if (currentDragData == null) return;
+                    CreateStickerInstance();
+                    ApplyStickerData(currentStickerInstance, currentDragData);
+                })
+                .AddTo(this);
         }
 
         private void OnEnable()
@@ -55,16 +65,6 @@ namespace BestStickerRoom.Room
                 dragDropHandler.OnDragDropped += HandleDragDropped;
                 dragDropHandler.OnDragCancelled += HandleDragCancelled;
             }
-            
-            dragDropGate.DragAllowed
-                .Subscribe(allowed =>
-                {
-                    if (!allowed) return;
-                    if (currentDragData == null) return;
-                    CreateStickerInstance();
-                    ApplyStickerData(currentStickerInstance, currentDragData);
-                })
-                .AddTo(this);
         }
 
         private void OnDisable()

@@ -7,7 +7,7 @@ namespace BestStickerRoom.Animation
 {
     public class AnimatedSticker : MonoBehaviour
     {
-        public Sprite[] animationFrames;
+        public Sprite[] animationFrames = new Sprite[0];
         public float frameRate = 0.1f;
 
         private SpriteRenderer spriteRenderer;

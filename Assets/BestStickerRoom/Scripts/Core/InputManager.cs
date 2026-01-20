@@ -6,8 +6,6 @@ namespace BestStickerRoom.Core
 {
     public class InputManager : MonoBehaviour, XRIDefaultInputActions.IXRIUIActions, XRIDefaultInputActions.ITouchscreenGesturesActions
     {
-        [SerializeField] private bool enableOnStart = true;
-
         private XRIDefaultInputActions inputActions;
         private Vector2 lastPointPosition;
 
@@ -40,14 +38,6 @@ namespace BestStickerRoom.Core
                 inputActions.XRIUI.RemoveCallbacks(this);
                 inputActions.TouchscreenGestures.RemoveCallbacks(this);
                 inputActions.Disable();
-            }
-        }
-
-        private void Start()
-        {
-            if (enableOnStart)
-            {
-                inputActions?.Enable();
             }
         }
 

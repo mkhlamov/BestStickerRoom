@@ -52,7 +52,11 @@ namespace BestStickerRoom.UI
             {
                 if (!asset || !asset.Sprite) continue;
 
-                CreateStickerItem(asset);
+                var item = CreateStickerItem(asset);
+                if (item != null)
+                {
+                    stickerItems.Add(item);
+                }
             }
         }
 
